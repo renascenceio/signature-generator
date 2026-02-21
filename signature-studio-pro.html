@@ -3,33 +3,64 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Renascence Signature Studio</title>
+<title>Signature Studio</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;600;700&family=Roboto:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* ── LIGHT (default / transparent) theme ── */
 :root {
+  --bg: transparent;
+  --surface: rgba(255,255,255,0.72);
+  --surface2: rgba(255,255,255,0.5);
+  --border: rgba(0,0,0,0.1);
+  --accent: #002AFF;
+  --accent2: #121212;
+  --text: #121212;
+  --muted: #888888;
+  --danger: #ef4444;
+  --success: #10b981;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --input-bg: rgba(255,255,255,0.8);
+  --code-color: #444;
+  --email-chrome: #f0f0f0;
+  --email-chrome-border: rgba(0,0,0,0.08);
+}
+
+/* ── DARK theme ── */
+[data-theme="dark"] {
   --bg: #0a0a0a;
   --surface: #141414;
   --surface2: #1c1c1c;
   --border: #2a2a2a;
   --accent: #002AFF;
   --accent2: #121212;
-  --gold: #f59e0b;
   --text: #f0f0f0;
   --muted: #6b6b6b;
   --danger: #ef4444;
   --success: #10b981;
+  --shadow: 0 2px 12px rgba(0,0,0,0.4);
+  --input-bg: #1c1c1c;
+  --code-color: #8892b0;
+  --email-chrome: #111118;
+  --email-chrome-border: #2a2a2a;
 }
 
 body {
   font-family: 'Roboto', sans-serif;
   background: var(--bg);
+  background-color: #f2f4f8;
   color: var(--text);
   min-height: 100vh;
   display: grid;
   grid-template-rows: auto 1fr;
   grid-template-columns: 420px 1fr;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+[data-theme="dark"] body,
+[data-theme="dark"] {
+  background-color: #0a0a0a;
 }
 
 /* HEADER */
@@ -47,10 +78,8 @@ header .logo {
   font-family: 'Roboto Mono', monospace;
   font-size: 1.4rem;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--accent);
+  letter-spacing: -0.02em;
 }
 
 header .sub {
@@ -63,7 +92,7 @@ header .sub {
 
 header .badge {
   margin-left: auto;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  background: var(--accent);
   color: white;
   font-size: 0.65rem;
   font-weight: 700;
@@ -160,10 +189,10 @@ textarea,
 select {
   width: 100%;
   padding: 0.55rem 0.8rem;
-  background: var(--surface2);
+  background: var(--input-bg);
   border: 1px solid var(--border);
   border-radius: 6px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-size: 0.8rem;
   color: var(--text);
   outline: none;
@@ -356,13 +385,13 @@ input[type="color"] {
   border: 1px solid var(--border);
   border-radius: 10px;
   overflow: hidden;
-  background: #1a1a2e;
+  box-shadow: var(--shadow);
 }
 
 .email-chrome {
   padding: 0.65rem 1rem;
-  background: #111118;
-  border-bottom: 1px solid var(--border);
+  background: var(--email-chrome);
+  border-bottom: 1px solid var(--email-chrome-border);
   display: flex;
   gap: 6px;
   align-items: center;
@@ -417,7 +446,7 @@ input[type="color"] {
   font-size: 0.68rem;
   line-height: 1.6;
   background: transparent;
-  color: #8892b0;
+  color: var(--code-color);
   border: none;
   resize: vertical;
   min-height: 130px;
@@ -442,7 +471,7 @@ input[type="color"] {
 .btn:active { transform: scale(0.97); }
 .btn:hover { opacity: 0.88; }
 
-.btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white; }
+.btn-primary { background: var(--accent); color: white; }
 .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
 .btn-success { background: var(--success); color: white; }
 
@@ -471,14 +500,63 @@ input[type="range"]::-webkit-slider-thumb {
 }
 .range-row { display: flex; align-items: center; gap: 0.75rem; }
 .range-val { font-size: 0.75rem; color: var(--accent); font-weight: 600; min-width: 36px; text-align: right; }
+
+/* THEME TOGGLE */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.03em;
+}
+.theme-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Light mode surface overrides */
+header {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+}
+
+.editor, .preview-panel {
+  transition: background 0.3s;
+}
+
+/* Style card selected highlight uses accent */
+.style-card input:checked + .card-inner {
+  border-color: var(--accent);
+  background: rgba(0, 42, 255, 0.06);
+}
+
+.social-item.active {
+  border-color: var(--accent);
+  background: rgba(0, 42, 255, 0.08);
+}
+
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">✦ Renascence Signature Studio</div>
-  <div class="sub">Pro Edition</div>
-  <div class="badge">Advanced</div>
+  <div class="logo">✦ Signature Studio</div>
+  <div class="sub">by Renascence</div>
+  <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Switch theme">
+    <span id="themeIcon">🌙</span>
+    <span id="themeLabel">Dark</span>
+  </button>
+  <div class="badge">Pro</div>
 </header>
 
 <!-- EDITOR -->
@@ -945,6 +1023,25 @@ function socialIconsHTML(linkColor) {
     return `<a href="${url}" style="display:inline-block;margin:0 4px;text-decoration:none;color:${linkColor};" target="_blank" title="${def.label}">${def.icon}</a>`;
   }).join('');
   return `<div style="margin:6px 0 2px;">${icons}</div>`;
+}
+
+// ── THEME TOGGLE ──────────────────────────────
+let isDark = false;
+
+function toggleTheme() {
+  isDark = !isDark;
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : '');
+  const icon = document.getElementById('themeIcon');
+  const label = document.getElementById('themeLabel');
+  if (isDark) {
+    icon.textContent = '☀️';
+    label.textContent = 'Light';
+    document.body.style.backgroundColor = '#0a0a0a';
+  } else {
+    icon.textContent = '🌙';
+    label.textContent = 'Dark';
+    document.body.style.backgroundColor = '#f2f4f8';
+  }
 }
 
 const themes = {
