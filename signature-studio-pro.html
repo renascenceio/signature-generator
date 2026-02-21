@@ -1,1 +1,1270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signature Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;600;700&family=Roboto:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* ── LIGHT (default / transparent) theme ── */
+:root {
+  --bg: transparent;
+  --surface: rgba(255,255,255,0.72);
+  --surface2: rgba(255,255,255,0.5);
+  --border: rgba(0,0,0,0.1);
+  --accent: #002AFF;
+  --accent2: #121212;
+  --text: #121212;
+  --muted: #888888;
+  --danger: #ef4444;
+  --success: #10b981;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --input-bg: rgba(255,255,255,0.8);
+  --code-color: #444;
+  --email-chrome: #f0f0f0;
+  --email-chrome-border: rgba(0,0,0,0.08);
+}
+
+/* ── DARK theme ── */
+[data-theme="dark"] {
+  --bg: #0a0a0a;
+  --surface: #141414;
+  --surface2: #1c1c1c;
+  --border: #2a2a2a;
+  --accent: #002AFF;
+  --accent2: #121212;
+  --text: #f0f0f0;
+  --muted: #6b6b6b;
+  --danger: #ef4444;
+  --success: #10b981;
+  --shadow: 0 2px 12px rgba(0,0,0,0.4);
+  --input-bg: #1c1c1c;
+  --code-color: #8892b0;
+  --email-chrome: #111118;
+  --email-chrome-border: #2a2a2a;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background: var(--bg);
+  background-color: #f2f4f8;
+  color: var(--text);
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: 420px 1fr;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+[data-theme="dark"] body,
+[data-theme="dark"] {
+  background-color: #0a0a0a;
+}
+
+/* HEADER */
+header {
+  grid-column: 1 / -1;
+  padding: 1.25rem 2rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+header .logo {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+}
+
+header .sub {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+header .badge {
+  margin-left: auto;
+  background: var(--accent);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.7rem;
+  border-radius: 20px;
+}
+
+/* PANELS */
+.editor {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 0;
+}
+
+.preview-panel {
+  background: var(--bg);
+  overflow-y: auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* TABS */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  z-index: 10;
+}
+
+.tab {
+  flex: 1;
+  padding: 0.9rem 0.5rem;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  user-select: none;
+}
+
+.tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.tab-content { display: none; padding: 1.5rem; }
+.tab-content.active { display: block; }
+
+/* SECTIONS */
+.section-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1rem;
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.section-label:first-child { margin-top: 0; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* FIELDS */
+.field { margin-bottom: 0.85rem; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 0.3rem;
+  letter-spacing: 0.04em;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="url"],
+input[type="tel"],
+textarea,
+select {
+  width: 100%;
+  padding: 0.55rem 0.8rem;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(79,110,247,0.15);
+}
+
+textarea { resize: vertical; min-height: 70px; line-height: 1.5; }
+
+/* UPLOAD ZONES */
+.upload-zone {
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+
+.upload-zone:hover {
+  border-color: var(--accent);
+  background: rgba(79,110,247,0.05);
+}
+
+.upload-zone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.upload-zone .upload-icon { font-size: 1.8rem; margin-bottom: 0.4rem; }
+.upload-zone .upload-text { font-size: 0.75rem; color: var(--muted); }
+.upload-zone .upload-sub { font-size: 0.65rem; color: var(--muted); margin-top: 0.2rem; opacity: 0.6; }
+
+.upload-preview {
+  max-width: 100%;
+  max-height: 80px;
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+/* SOCIAL TOGGLES */
+.social-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.social-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.5rem 0.4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  user-select: none;
+}
+
+.social-item.active {
+  border-color: var(--accent);
+  background: rgba(79,110,247,0.1);
+}
+
+.social-item .s-icon { display:flex; align-items:center; justify-content:center; width:24px; height:24px; color: var(--muted); transition: color 0.15s; }
+.social-item .s-icon svg { display:block; fill: currentColor; }
+.social-item.active .s-icon { color: var(--accent); }
+.social-item .s-name { font-size: 0.6rem; color: var(--muted); font-weight: 600; letter-spacing: 0.05em; transition: color 0.15s; }
+.social-item.active .s-name { color: var(--accent); }
+
+.social-url-fields { display: flex; flex-direction: column; gap: 0.5rem; }
+.social-url-row { display: flex; align-items: center; gap: 0.5rem; }
+.social-url-row span { display:flex; align-items:center; justify-content:center; width: 24px; height:24px; flex-shrink: 0; color: var(--muted); }
+.social-url-row span svg { display:block; fill: currentColor; }
+
+/* COLORS */
+.color-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+.color-item { display: flex; align-items: center; gap: 0.6rem; }
+input[type="color"] {
+  width: 36px;
+  height: 36px;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface2);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.color-item label { margin: 0; font-size: 0.72rem; }
+
+/* STYLE CARDS */
+.style-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem; }
+.style-card { position: relative; cursor: pointer; }
+.style-card input { position: absolute; opacity: 0; }
+.style-card .card-inner {
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  background: var(--surface2);
+  transition: border-color 0.15s;
+  min-height: 72px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  overflow: hidden;
+}
+.style-card input:checked + .card-inner {
+  border-color: var(--accent);
+  background: rgba(79,110,247,0.08);
+}
+.style-card .card-name {
+  text-align: center;
+  font-size: 0.65rem;
+  color: var(--muted);
+  margin-top: 0.3rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.mini-block { display: flex; gap: 8px; }
+.mini-photo { width: 24px; height: 24px; background: #444; border-radius: 50%; flex-shrink: 0; }
+.mini-photo.sq { border-radius: 3px; }
+.mini-text { flex: 1; }
+.mini-name-t { height: 5px; background: #888; border-radius: 2px; margin-bottom: 3px; width: 70%; }
+.mini-title-t { height: 4px; background: #555; border-radius: 2px; width: 50%; }
+.mini-divider-t { height: 1px; background: #333; margin: 5px 0; }
+.mini-contact-t { height: 3px; background: #444; border-radius: 2px; margin-top: 3px; }
+
+/* TOGGLE SWITCH */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.toggle-row:last-child { border-bottom: none; }
+.toggle-label { font-size: 0.78rem; color: var(--text); }
+.toggle-sub { font-size: 0.68rem; color: var(--muted); margin-top: 1px; }
+
+.toggle {
+  position: relative;
+  width: 38px;
+  height: 22px;
+  flex-shrink: 0;
+}
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--border);
+  border-radius: 22px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  left: 3px;
+  top: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+.toggle input:checked + .toggle-slider { background: var(--accent); }
+.toggle input:checked + .toggle-slider::before { transform: translateX(16px); }
+
+/* PREVIEW AREA */
+.preview-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.email-mockup {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.email-chrome {
+  padding: 0.65rem 1rem;
+  background: var(--email-chrome);
+  border-bottom: 1px solid var(--email-chrome-border);
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot.r { background: #ff5f57; }
+.dot.y { background: #ffbd2e; }
+.dot.g { background: #28ca41; }
+.email-subject { font-size: 0.72rem; color: var(--muted); margin-left: 0.75rem; }
+
+.email-body {
+  padding: 1.5rem;
+  font-size: 0.85rem;
+  line-height: 1.8;
+  color: #ccc;
+  background: white;
+}
+
+.email-body p { color: #333; }
+
+.sig-sep { border: none; border-top: 1px solid #e0e0e0; margin: 1rem 0 0.75rem; }
+
+#sig-preview { font-size: 13px; line-height: 1.5; }
+
+/* OUTPUT */
+.output-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.output-box-header {
+  padding: 0.6rem 1rem;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#rawHTML {
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.68rem;
+  line-height: 1.6;
+  background: transparent;
+  color: var(--code-color);
+  border: none;
+  resize: vertical;
+  min-height: 130px;
+  outline: none;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 6px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.15s, transform 0.1s;
+  text-transform: uppercase;
+}
+.btn:active { transform: scale(0.97); }
+.btn:hover { opacity: 0.88; }
+
+.btn-primary { background: var(--accent); color: white; }
+.btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.btn-success { background: var(--success); color: white; }
+
+.actions { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+.hint { font-size: 0.72rem; color: var(--muted); }
+
+/* RANGE SLIDER */
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  background: var(--border);
+  border-radius: 4px;
+  outline: none;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+}
+.range-row { display: flex; align-items: center; gap: 0.75rem; }
+.range-val { font-size: 0.75rem; color: var(--accent); font-weight: 600; min-width: 36px; text-align: right; }
+
+/* THEME TOGGLE */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.03em;
+}
+.theme-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Light mode surface overrides */
+header {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+}
+
+.editor, .preview-panel {
+  transition: background 0.3s;
+}
+
+/* Style card selected highlight uses accent */
+.style-card input:checked + .card-inner {
+  border-color: var(--accent);
+  background: rgba(0, 42, 255, 0.06);
+}
+
+.social-item.active {
+  border-color: var(--accent);
+  background: rgba(0, 42, 255, 0.08);
+}
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">✦ Signature Studio</div>
+  <div class="sub">by Renascence</div>
+  <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Switch theme">
+    <span id="themeIcon">🌙</span>
+    <span id="themeLabel">Dark</span>
+  </button>
+  <div class="badge">Pro</div>
+</header>
+
+<!-- EDITOR -->
+<div class="editor">
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('info')">Info</div>
+    <div class="tab" onclick="switchTab('media')">Media</div>
+    <div class="tab" onclick="switchTab('social')">Social</div>
+    <div class="tab" onclick="switchTab('links')">Links</div>
+    <div class="tab" onclick="switchTab('design')">Design</div>
+  </div>
+
+  <!-- INFO TAB -->
+  <div class="tab-content active" id="tab-info">
+    <div class="section-label">Identity</div>
+    <div class="field">
+      <label>Full Name</label>
+      <input type="text" id="name" value="René Calloway" oninput="render()">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Job Title</label>
+        <input type="text" id="jobtitle" value="Head of Strategy" oninput="render()">
+      </div>
+      <div class="field">
+        <label>Company</label>
+        <input type="text" id="company" value="Meridian Group" oninput="render()">
+      </div>
+    </div>
+
+    <div class="section-label">Contact</div>
+    <div class="field-row">
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="email" value="rene@meridiangroup.co" oninput="render()">
+      </div>
+      <div class="field">
+        <label>Mobile</label>
+        <input type="tel" id="mobile" value="+44 7700 900 412" oninput="render()">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Telephone</label>
+        <input type="tel" id="telephone" value="+44 20 7946 0318" oninput="render()">
+      </div>
+      <div class="field">
+        <label>Website</label>
+        <input type="text" id="website" value="meridiangroup.co" oninput="render()">
+      </div>
+    </div>
+    <div class="field">
+      <label>Address</label>
+      <input type="text" id="address" value="14 Bishopsgate, London, EC2N 3AR" oninput="render()">
+    </div>
+
+    <div class="section-label">Disclaimer</div>
+    <div class="field">
+      <label>Disclaimer text (leave blank to hide)</label>
+      <textarea id="disclaimer" oninput="render()">IMPORTANT: The contents of this email and any attachments are confidential. It is strictly forbidden to share any part of this message with any third party, without the written consent of the sender.</textarea>
+    </div>
+  </div>
+
+  <!-- MEDIA TAB -->
+  <div class="tab-content" id="tab-media">
+    <div class="section-label">Profile Photo</div>
+    <div class="upload-zone" id="photoZone">
+      <input type="file" accept="image/*" onchange="handleUpload(event,'photo')">
+      <div id="photoPreviewWrap">
+        <div class="upload-icon">👤</div>
+        <div class="upload-text">Click to upload profile photo</div>
+        <div class="upload-sub">PNG, JPG · Recommended: square, min 200×200</div>
+      </div>
+    </div>
+    <div class="field-row" style="margin-top:0.75rem;">
+      <div class="field">
+        <label>Photo size (px)</label>
+        <div class="range-row">
+          <input type="range" id="photoSize" min="50" max="120" value="80" oninput="updateRange(this,'photoSizeVal');render()">
+          <span class="range-val" id="photoSizeVal">80px</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Photo shape</label>
+        <select id="photoShape" onchange="render()">
+          <option value="50%">Circle</option>
+          <option value="8px">Rounded</option>
+          <option value="0">Square</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section-label">Company Logo</div>
+    <div class="upload-zone" id="logoZone">
+      <input type="file" accept="image/*" onchange="handleUpload(event,'logo')">
+      <div id="logoPreviewWrap">
+        <div class="upload-icon">🏢</div>
+        <div class="upload-text">Click to upload company logo</div>
+        <div class="upload-sub">PNG with transparency recommended</div>
+      </div>
+    </div>
+    <div class="field" style="margin-top:0.75rem;">
+      <label>Logo height (px)</label>
+      <div class="range-row">
+        <input type="range" id="logoSize" min="20" max="80" value="36" oninput="updateRange(this,'logoSizeVal');render()">
+        <span class="range-val" id="logoSizeVal">36px</span>
+      </div>
+    </div>
+
+    <div class="section-label">Banner Image</div>
+    <div class="upload-zone" id="bannerZone">
+      <input type="file" accept="image/*" onchange="handleUpload(event,'banner')">
+      <div id="bannerPreviewWrap">
+        <div class="upload-icon">🖼️</div>
+        <div class="upload-text">Click to upload banner</div>
+        <div class="upload-sub">Recommended: 600×150px · PNG or JPG</div>
+      </div>
+    </div>
+    <div class="field" style="margin-top:0.75rem;">
+      <label>Banner width (px)</label>
+      <div class="range-row">
+        <input type="range" id="bannerWidth" min="300" max="700" value="520" oninput="updateRange(this,'bannerWidthVal');render()">
+        <span class="range-val" id="bannerWidthVal">520px</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>Banner link URL</label>
+      <input type="url" id="bannerLink" placeholder="https://renascence.io" oninput="render()">
+    </div>
+  </div>
+
+  <!-- SOCIAL TAB -->
+  <div class="tab-content" id="tab-social">
+    <div class="section-label">Enable Social Channels</div>
+    <div class="social-grid">
+      <div class="social-item active" id="stog-linkedin" onclick="toggleSocial('linkedin')">
+        <span class="s-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></span>
+        <span class="s-name">LinkedIn</span>
+      </div>
+      <div class="social-item active" id="stog-youtube" onclick="toggleSocial('youtube')">
+        <span class="s-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></span>
+        <span class="s-name">YouTube</span>
+      </div>
+      <div class="social-item active" id="stog-instagram" onclick="toggleSocial('instagram')">
+        <span class="s-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></span>
+        <span class="s-name">Instagram</span>
+      </div>
+      <div class="social-item active" id="stog-whatsapp" onclick="toggleSocial('whatsapp')">
+        <span class="s-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></span>
+        <span class="s-name">WhatsApp</span>
+      </div>
+      <div class="social-item active" id="stog-telegram" onclick="toggleSocial('telegram')">
+        <span class="s-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></span>
+        <span class="s-name">Telegram</span>
+      </div>
+      <div class="social-item" id="stog-twitter" onclick="toggleSocial('twitter')">
+        <span class="s-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.261 5.628 5.903-5.628zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span>
+        <span class="s-name">X / Twitter</span>
+      </div>
+      <div class="social-item" id="stog-facebook" onclick="toggleSocial('facebook')">
+        <span class="s-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></span>
+        <span class="s-name">Facebook</span>
+      </div>
+      <div class="social-item" id="stog-tiktok" onclick="toggleSocial('tiktok')">
+        <span class="s-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg></span>
+        <span class="s-name">TikTok</span>
+      </div>
+      <div class="social-item" id="stog-github" onclick="toggleSocial('github')">
+        <span class="s-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></span>
+        <span class="s-name">GitHub</span>
+      </div>
+    </div>
+
+    <div class="section-label">Profile URLs</div>
+    <div class="social-url-fields">
+      <div class="social-url-row"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></span><input type="url" id="url-linkedin" placeholder="https://linkedin.com/in/renecalloway" oninput="render()"></div>
+      <div class="social-url-row"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></span><input type="url" id="url-youtube" placeholder="https://youtube.com/@channel" oninput="render()"></div>
+      <div class="social-url-row"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></span><input type="url" id="url-instagram" placeholder="https://instagram.com/username" oninput="render()"></div>
+      <div class="social-url-row"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></span><input type="url" id="url-whatsapp" placeholder="https://wa.me/447700900412" oninput="render()"></div>
+      <div class="social-url-row"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></span><input type="url" id="url-telegram" placeholder="https://t.me/renecalloway" oninput="render()"></div>
+      <div class="social-url-row"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.261 5.628 5.903-5.628zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span><input type="url" id="url-twitter" placeholder="https://x.com/renecalloway" oninput="render()"></div>
+      <div class="social-url-row"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></span><input type="url" id="url-facebook" placeholder="https://facebook.com/renecalloway" oninput="render()"></div>
+      <div class="social-url-row"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg></span><input type="url" id="url-tiktok" placeholder="https://tiktok.com/@renecalloway" oninput="render()"></div>
+      <div class="social-url-row"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></span><input type="url" id="url-github" placeholder="https://github.com/renecalloway" oninput="render()"></div>
+    </div>
+  </div>
+
+  <!-- LINKS TAB -->
+  <div class="tab-content" id="tab-links">
+    <div class="section-label">Action Links</div>
+
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label" style="display:flex;align-items:center;gap:0.5rem;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Book a Meeting
+        </div>
+        <div class="toggle-sub">Calendly, Cal.com, or similar</div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="tog-meeting" checked onchange="render()"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="field" style="margin-top:0.5rem;">
+      <label>Meeting Label</label>
+      <input type="text" id="meetingLabel" value="Book time to meet with me" oninput="render()">
+    </div>
+    <div class="field">
+      <label>Meeting URL</label>
+      <input type="url" id="meetingUrl" placeholder="https://calendly.com/yourname" oninput="render()">
+    </div>
+
+    <div class="toggle-row" style="margin-top:1rem;">
+      <div>
+        <div class="toggle-label" style="display:flex;align-items:center;gap:0.5rem;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><circle cx="18" cy="9" r="3" fill="currentColor" stroke="none" opacity="0.3"/><line x1="18" y1="7" x2="18" y2="11"/><line x1="16" y1="9" x2="20" y2="9"/></svg>
+          Virtual PA / AI Assistant
+        </div>
+        <div class="toggle-sub">Link to your virtual assistant</div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="tog-pa" checked onchange="render()"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="field" style="margin-top:0.5rem;">
+      <label>Virtual PA Label</label>
+      <input type="text" id="paLabel" value="Speak to my Virtual PA" oninput="render()">
+    </div>
+    <div class="field">
+      <label>Virtual PA URL</label>
+      <input type="url" id="paUrl" placeholder="https://your-ai-assistant.com" oninput="render()">
+    </div>
+
+    <div class="toggle-row" style="margin-top:1rem;">
+      <div>
+        <div class="toggle-label" style="display:flex;align-items:center;gap:0.5rem;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          Website Link
+        </div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="tog-website" checked onchange="render()"><span class="toggle-slider"></span></label>
+    </div>
+
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label" style="display:flex;align-items:center;gap:0.5rem;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Show Disclaimer
+        </div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="tog-disclaimer" checked onchange="render()"><span class="toggle-slider"></span></label>
+    </div>
+  </div>
+
+  <!-- DESIGN TAB -->
+  <div class="tab-content" id="tab-design">
+    <div class="section-label">Layout</div>
+    <div class="style-grid">
+      <label class="style-card">
+        <input type="radio" name="layout" value="pro-dark" checked onchange="applyTheme('dark');render()">
+        <div class="card-inner" style="background:#002AFF;">
+          <div class="mini-block">
+            <div class="mini-photo" style="background:rgba(255,255,255,0.3);"></div>
+            <div class="mini-text">
+              <div class="mini-name-t" style="background:#ffffff;"></div>
+              <div class="mini-title-t" style="background:rgba(255,255,255,0.5);"></div>
+            </div>
+          </div>
+          <div class="mini-divider-t" style="background:#121212;"></div>
+          <div class="mini-contact-t" style="background:rgba(255,255,255,0.4);"></div>
+        </div>
+        <span class="card-name">Renascence Blue</span>
+      </label>
+
+      <label class="style-card">
+        <input type="radio" name="layout" value="pro-light" onchange="applyTheme('light');render()">
+        <div class="card-inner" style="background:#fff;">
+          <div class="mini-block">
+            <div class="mini-photo" style="background:#ddd;"></div>
+            <div class="mini-text">
+              <div class="mini-name-t" style="background:#002AFF;"></div>
+              <div class="mini-title-t" style="background:#999;"></div>
+            </div>
+          </div>
+          <div class="mini-divider-t" style="background:#121212;"></div>
+          <div class="mini-contact-t" style="background:#bbb;"></div>
+        </div>
+        <span class="card-name">Pro Light</span>
+      </label>
+
+      <label class="style-card">
+        <input type="radio" name="layout" value="minimal-top" onchange="applyTheme('light');render()">
+        <div class="card-inner" style="background:#fff;padding:0.5rem;">
+          <div style="background:#002AFF;height:100%;border-radius:3px;display:flex;flex-direction:column;justify-content:center;padding:0.4rem 0.5rem;gap:3px;">
+            <div style="height:5px;background:#fff;border-radius:2px;width:65%;"></div>
+            <div style="height:3px;background:rgba(255,255,255,0.5);border-radius:2px;width:40%;"></div>
+            <div style="height:1px;background:rgba(255,255,255,0.3);margin:3px 0;"></div>
+            <div style="height:3px;background:rgba(255,255,255,0.4);border-radius:2px;width:80%;"></div>
+            <div style="height:3px;background:rgba(255,255,255,0.4);border-radius:2px;width:60%;"></div>
+          </div>
+        </div>
+        <span class="card-name">Full Bleed</span>
+      </label>
+
+      <label class="style-card">
+        <input type="radio" name="layout" value="side-photo" onchange="applyTheme('light');render()">
+        <div class="card-inner">
+          <div style="display:flex;gap:6px;align-items:center;">
+            <div style="width:28px;height:40px;background:#444;border-radius:4px;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <div class="mini-name-t" style="background:#f59e0b;margin-bottom:4px;"></div>
+              <div class="mini-title-t"></div>
+              <div class="mini-contact-t" style="margin-top:5px;"></div>
+            </div>
+          </div>
+        </div>
+        <span class="card-name">Side Photo</span>
+      </label>
+    </div>
+
+    <div class="section-label">Colors</div>
+    <div class="color-grid">
+      <div class="color-item">
+        <input type="color" id="c-bg" value="#002AFF" oninput="render()">
+        <div><label>Background</label></div>
+      </div>
+      <div class="color-item">
+        <input type="color" id="c-name" value="#FFFFFF" oninput="render()">
+        <div><label>Name color</label></div>
+      </div>
+      <div class="color-item">
+        <input type="color" id="c-title" value="#FFFFFF" oninput="render()">
+        <div><label>Title / Muted</label></div>
+      </div>
+      <div class="color-item">
+        <input type="color" id="c-text" value="#FFFFFF" oninput="render()">
+        <div><label>Body text</label></div>
+      </div>
+      <div class="color-item">
+        <input type="color" id="c-link" value="#FFFFFF" oninput="render()">
+        <div><label>Link color</label></div>
+      </div>
+      <div class="color-item">
+        <input type="color" id="c-divider" value="#121212" oninput="render()">
+        <div><label>Divider</label></div>
+      </div>
+    </div>
+
+    <div class="section-label">Typography</div>
+    <div class="field-row">
+      <div class="field">
+        <label>Font</label>
+        <select id="fontFamily" onchange="render()">
+          <option value="Arial, sans-serif">Arial</option>
+          <option value="Georgia, serif">Georgia</option>
+          <option value="Verdana, sans-serif">Verdana</option>
+          <option value="Tahoma, sans-serif" selected>Tahoma</option>
+          <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+          <option value="'Times New Roman', serif">Times New Roman</option>
+          <option value="'Courier New', monospace">Courier New</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Base size</label>
+        <select id="fontSize" onchange="render()">
+          <option value="12px">12px</option>
+          <option value="13px" selected>13px</option>
+          <option value="14px">14px</option>
+          <option value="15px">15px</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PREVIEW PANEL -->
+<div class="preview-panel">
+  <div class="preview-label">Live Preview</div>
+
+  <div class="email-mockup">
+    <div class="email-chrome">
+      <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+      <span class="email-subject">Re: Q4 Strategy Proposal — Meridian Group</span>
+    </div>
+    <div class="email-body">
+      <p>Hi René,</p>
+      <p>Great speaking with you yesterday — the proposal looks very strong. I'll loop in the team and we'll get back to you by Thursday.</p>
+      <p>Best,</p>
+      <hr class="sig-sep">
+      <div id="sig-preview"></div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" id="copyBtn" onclick="copyHTML()">⧉ Copy HTML</button>
+    <button class="btn btn-secondary" onclick="copyPlain()">Copy Plain</button>
+    <span class="hint">Paste into Gmail · Outlook · Apple Mail signature settings</span>
+  </div>
+
+  <div class="output-box">
+    <div class="output-box-header">
+      <span>HTML Output</span>
+      <span id="charCount" style="color:var(--muted);font-weight:400;">0 chars</span>
+    </div>
+    <textarea id="rawHTML" readonly></textarea>
+  </div>
+</div>
+
+<script>
+// State
+const images = { photo: null, logo: null, banner: null };
+const socialActive = { linkedin:true, youtube:true, instagram:true, whatsapp:true, telegram:true, twitter:false, facebook:false, tiktok:false, github:false };
+
+const socialDefs = {
+  // LinkedIn: outlined square with "in" letterform — works on any bg
+  linkedin: { label:'LinkedIn', icon:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="3"/><line x1="7" y1="10" x2="7" y2="17"/><line x1="7" y1="7" x2="7.01" y2="7" stroke-width="3"/><path d="M11 10v7M11 13a3 3 0 016 0v4"/></svg>' },
+
+  // YouTube: outlined rectangle + outlined play triangle (no fill on triangle)
+  youtube: { label:'YouTube', icon:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="4"/><polygon points="10,9 16,12 10,15" fill="currentColor" stroke="none"/></svg>' },
+
+  // Instagram: outlined square + outlined circle + dot — classic icon outline
+  instagram: { label:'Instagram', icon:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>' },
+
+  // WhatsApp: outlined speech bubble with phone handset inside
+  whatsapp: { label:'WhatsApp', icon:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/><path d="M9 10s.5 1 2 2.5S14 15 14 15" stroke-width="1.5"/></svg>' },
+
+  // Telegram: outlined circle + paper plane arrow
+  telegram: { label:'Telegram', icon:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/><path d="M6 10l10-4-4 10-2-3-4-3z" stroke-width="1.5"/></svg>' },
+
+  // X / Twitter: the X letterform, outlined strokes
+  twitter: { label:'X', icon:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>' },
+
+  // Facebook: outlined circle with "f" stroke
+  facebook: { label:'Facebook', icon:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M15 8h-1.5A1.5 1.5 0 0012 9.5V12h3l-.5 3H12v6"/></svg>' },
+
+  // TikTok: outlined music note / TikTok shape
+  tiktok: { label:'TikTok', icon:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 104 4V4a5 5 0 005 5"/></svg>' },
+
+  // GitHub: outlined octocat circle
+  github: { label:'GitHub', icon:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>' }
+};
+
+function switchTab(id) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    const ids = ['info','media','social','links','design'];
+    t.classList.toggle('active', ids[i] === id);
+  });
+  document.querySelectorAll('.tab-content').forEach(c => {
+    c.classList.toggle('active', c.id === 'tab-'+id);
+  });
+}
+
+function toggleSocial(key) {
+  socialActive[key] = !socialActive[key];
+  document.getElementById('stog-'+key).classList.toggle('active', socialActive[key]);
+  render();
+}
+
+function handleUpload(e, key) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    images[key] = ev.target.result;
+    const wrap = document.getElementById(key+'PreviewWrap');
+    wrap.innerHTML = `<img src="${ev.target.result}" class="upload-preview" alt="${key}">`;
+    render();
+  };
+  reader.readAsDataURL(file);
+}
+
+function updateRange(el, valId) {
+  document.getElementById(valId).textContent = el.value + 'px';
+}
+
+function g(id) { return document.getElementById(id); }
+function gv(id) { return g(id).value; }
+
+function socialIconsHTML(linkColor) {
+  const active = Object.keys(socialActive).filter(k => socialActive[k]);
+  if (!active.length) return '';
+  const icons = active.map(k => {
+    const def = socialDefs[k];
+    const url = gv('url-'+k) || '#';
+    return `<a href="${url}" style="display:inline-block;margin:0 4px;text-decoration:none;color:${linkColor};" target="_blank" title="${def.label}">${def.icon}</a>`;
+  }).join('');
+  return `<div style="margin:6px 0 2px;">${icons}</div>`;
+}
+
+// ── THEME TOGGLE ──────────────────────────────
+let isDark = false;
+
+function toggleTheme() {
+  isDark = !isDark;
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : '');
+  const icon = document.getElementById('themeIcon');
+  const label = document.getElementById('themeLabel');
+  if (isDark) {
+    icon.textContent = '☀️';
+    label.textContent = 'Light';
+    document.body.style.backgroundColor = '#0a0a0a';
+  } else {
+    icon.textContent = '🌙';
+    label.textContent = 'Dark';
+    document.body.style.backgroundColor = '#f2f4f8';
+  }
+}
+
+const themes = {
+  dark: {
+    'c-bg': '#002AFF', 'c-name': '#FFFFFF', 'c-title': '#FFFFFF',
+    'c-text': '#FFFFFF', 'c-link': '#FFFFFF', 'c-divider': '#121212'
+  },
+  light: {
+    'c-bg': '#FFFFFF', 'c-name': '#002AFF', 'c-title': '#121212',
+    'c-text': '#121212', 'c-link': '#002AFF', 'c-divider': '#121212'
+  }
+};
+
+function applyTheme(name) {
+  const t = themes[name];
+  if (!t) return;
+  Object.entries(t).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+  });
+}
+
+function render() {
+  const name = gv('name') || 'Your Name';
+  const jobtitle = gv('jobtitle');
+  const company = gv('company');
+  const email = gv('email');
+  const mobile = gv('mobile');
+  const telephone = gv('telephone');
+  const website = gv('website');
+  const address = gv('address');
+  const disclaimer = gv('disclaimer');
+  const layout = document.querySelector('input[name="layout"]:checked')?.value || 'pro-dark';
+  const font = gv('fontFamily');
+  const fsize = gv('fontSize');
+  const cBg = gv('c-bg');
+  const cName = gv('c-name');
+  const cTitle = gv('c-title');
+  const cText = gv('c-text');
+  const cLink = gv('c-link');
+  const cDivider = gv('c-divider');
+  const photoSize = g('photoSize').value;
+  const photoShape = gv('photoShape');
+  const logoSize = g('logoSize').value;
+  const bannerWidth = g('bannerWidth').value;
+  const bannerLink = gv('bannerLink');
+  const showMeeting = g('tog-meeting').checked;
+  const meetingLabel = gv('meetingLabel');
+  const meetingUrl = gv('meetingUrl');
+  const showPA = g('tog-pa').checked;
+  const paLabel = gv('paLabel');
+  const paUrl = gv('paUrl');
+  const showWebsite = g('tog-website').checked;
+  const showDisclaimer = g('tog-disclaimer').checked;
+
+  const baseStyle = `font-family:${font};font-size:${fsize};color:${cText};`;
+
+  let photoBlock = '';
+  if (images.photo) {
+    photoBlock = `<img src="${images.photo}" width="${photoSize}" height="${photoSize}" style="border-radius:${photoShape};object-fit:cover;display:block;" alt="Photo">`;
+  }
+
+  let logoBlock = '';
+  if (images.logo) {
+    logoBlock = `<img src="${images.logo}" height="${logoSize}" style="display:inline-block;vertical-align:middle;" alt="Logo">`;
+  }
+
+  let bannerBlock = '';
+  if (images.banner) {
+    const inner = `<img src="${images.banner}" width="${bannerWidth}" style="display:block;max-width:100%;border-radius:6px;" alt="Banner">`;
+    bannerBlock = `<div style="margin-top:12px;">${bannerLink ? `<a href="${bannerLink}" target="_blank" style="display:inline-block;text-decoration:none;">${inner}</a>` : inner}</div>`;
+  }
+
+  const socials = socialIconsHTML(cLink);
+
+  // Contact rows
+  const contactRows = [];
+  if (email) contactRows.push(['Email', `<a href="mailto:${email}" style="color:${cLink};text-decoration:none;">${email}</a>`]);
+  if (mobile) contactRows.push(['Mobile', `<span style="color:${cText};">${mobile}</span>`]);
+  if (telephone) contactRows.push(['Telephone', `<span style="color:${cText};">${telephone}</span>`]);
+  if (address) contactRows.push(['Address', `<span style="color:${cText};">${address}</span>`]);
+
+  const contactTable = contactRows.length ? `<table cellpadding="0" cellspacing="0"><tbody>${
+    contactRows.map(([l,v]) => `<tr><td style="padding:1px 12px 1px 0;font-weight:600;color:${cTitle};white-space:nowrap;">${l}:</td><td style="padding:1px 0;">${v}</td></tr>`).join('')
+  }</tbody></table>` : '';
+
+  const websiteLink = showWebsite && website ? `<a href="https://${website.replace(/^https?:\/\//,'')}" style="color:${cLink};text-decoration:underline;">${website}</a>` : '';
+
+  // SVG icons for action links (inline, email-safe via img data URIs not needed — just use text symbols cleanly)
+  const calIcon = `<span style="display:inline-block;width:14px;height:14px;vertical-align:middle;margin-right:5px;border:1.5px solid ${cLink};border-radius:2px;line-height:12px;text-align:center;font-size:9px;font-weight:700;color:${cLink};">&#x25A0;</span>`;
+  const paIcon  = `<span style="display:inline-block;width:14px;height:14px;vertical-align:middle;margin-right:5px;border:1.5px solid ${cLink};border-radius:50%;line-height:11px;text-align:center;font-size:9px;color:${cLink};">&#x25CF;</span>`;
+
+  // Action links
+  const actionLinks = [];
+  if (showMeeting && meetingUrl) {
+    actionLinks.push(`<a href="${meetingUrl}" style="color:${cLink};text-decoration:none;font-weight:600;font-size:0.9em;">${calIcon}${meetingLabel}</a>`);
+  }
+  if (showPA && paUrl) {
+    actionLinks.push(`<a href="${paUrl}" style="color:${cLink};text-decoration:none;font-weight:600;font-size:0.9em;">${paIcon}${paLabel}</a>`);
+  }
+  const actionBlock = actionLinks.length ? `<div style="margin-top:10px;">${actionLinks.map(a=>`<div style="margin-bottom:4px;">${a}</div>`).join('')}</div>` : '';
+
+  const disclaimerBlock = showDisclaimer && disclaimer.trim()
+    ? `<div style="margin-top:12px;font-size:10px;color:#aaaaaa;line-height:1.5;max-width:560px;">${disclaimer}</div>`
+    : '';
+
+  let html = '';
+
+  if (layout === 'pro-dark' || layout === 'pro-light') {
+    html = `<table cellpadding="0" cellspacing="0" style="${baseStyle}background:${cBg};padding:16px 20px;border-radius:8px;max-width:600px;">
+  <tr>
+    <td style="padding-bottom:8px;">
+      <table cellpadding="0" cellspacing="0" width="100%"><tr>
+        <td>
+          <div style="font-size:2em;font-weight:700;color:${cName};letter-spacing:-0.01em;">${name}</div>
+          ${socials}
+        </td>
+        ${logoBlock ? `<td style="vertical-align:top;text-align:right;padding-left:12px;">${logoBlock}</td>` : ''}
+      </tr></table>
+    </td>
+  </tr>
+  <tr><td><div style="height:1px;background:${cDivider};margin-bottom:10px;"></div></td></tr>
+  <tr>
+    <td>
+      <table cellpadding="0" cellspacing="0" width="100%"><tr valign="top">
+        ${photoBlock ? `<td style="padding-right:14px;width:${photoSize}px;">${photoBlock}</td>` : ''}
+        <td style="padding-right:20px;">
+          <div style="color:${cTitle};margin-bottom:2px;">${jobtitle}</div>
+          <div style="font-weight:700;color:${cText};margin-bottom:6px;">${company}</div>
+          ${websiteLink ? `<div style="margin-top:4px;">${websiteLink}</div>` : ''}
+        </td>
+        <td>${contactTable}</td>
+      </tr></table>
+    </td>
+  </tr>
+  ${bannerBlock ? `<tr><td>${bannerBlock}</td></tr>` : ''}
+  ${actionBlock ? `<tr><td>${actionBlock}</td></tr>` : ''}
+  ${disclaimerBlock ? `<tr><td>${disclaimerBlock}</td></tr>` : ''}
+</table>`;
+
+  } else if (layout === 'minimal-top') {
+    // Full Bleed: solid accent-color left bar with name, contact columns side by side on white
+    html = `<table cellpadding="0" cellspacing="0" style="${baseStyle}max-width:580px;border-radius:6px;overflow:hidden;">
+  <tr valign="top">
+    <td style="background:${cBg};padding:16px 18px;width:180px;vertical-align:top;">
+      ${logoBlock ? `<div style="margin-bottom:10px;">${logoBlock}</div>` : ''}
+      <div style="font-size:1.7em;font-weight:700;color:${cName};line-height:1.2;margin-bottom:6px;">${name}</div>
+      <div style="font-size:0.85em;color:${cTitle};margin-bottom:2px;">${jobtitle}</div>
+      <div style="font-size:0.85em;font-weight:600;color:${cText};">${company}</div>
+      ${websiteLink ? `<div style="margin-top:8px;font-size:0.8em;">${websiteLink}</div>` : ''}
+      ${socials ? `<div style="margin-top:8px;">${socials}</div>` : ''}
+    </td>
+    <td style="background:#ffffff;padding:16px 18px;vertical-align:top;border-left:3px solid ${cBg};">
+      ${contactTable}
+      ${actionBlock ? `<div style="margin-top:8px;">${actionBlock}</div>` : ''}
+      ${bannerBlock ? `<div style="margin-top:8px;">${bannerBlock}</div>` : ''}
+      ${disclaimerBlock}
+    </td>
+  </tr>
+</table>`;
+
+  } else if (layout === 'side-photo') {
+    html = `<table cellpadding="0" cellspacing="0" style="${baseStyle}max-width:580px;">
+  <tr valign="top">
+    ${photoBlock ? `<td style="padding-right:14px;border-right:2px solid ${cName};padding:0 14px 0 0;">${photoBlock}<br>${logoBlock}</td>` : ''}
+    <td style="padding-left:14px;">
+      <div style="font-size:2em;font-weight:700;color:${cName};margin-bottom:2px;">${name}</div>
+      <div style="color:${cTitle};margin-bottom:6px;">${[jobtitle,company].filter(Boolean).join(' · ')}</div>
+      ${contactTable}
+      ${websiteLink ? `<div style="margin-top:4px;">${websiteLink}</div>` : ''}
+      ${socials}
+      ${bannerBlock}
+      ${actionBlock}
+      ${disclaimerBlock}
+    </td>
+  </tr>
+</table>`;
+  }
+
+  g('sig-preview').innerHTML = html;
+  g('rawHTML').value = html;
+  g('charCount').textContent = html.length.toLocaleString() + ' chars';
+}
+
+function copyHTML() {
+  navigator.clipboard.writeText(g('rawHTML').value).then(() => {
+    const btn = g('copyBtn');
+    btn.textContent = '✓ Copied!';
+    btn.className = 'btn btn-success';
+    setTimeout(() => {
+      btn.textContent = '⧉ Copy HTML';
+      btn.className = 'btn btn-primary';
+    }, 2200);
+  });
+}
+
+function copyPlain() {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = g('rawHTML').value;
+  navigator.clipboard.writeText(tmp.textContent || tmp.innerText || '');
+}
+
+render();
+</script>
+</body>
+</html>
